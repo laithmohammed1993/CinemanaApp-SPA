@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta property='og:url'           content='https://cinemana.herokuapp.com/' />
+  <meta property='og:type'          content='Movies' />
+  <meta property='og:title'         content='Cienmana App - SPA' />
+  <meta property='og:description'   content='website help you to search and save your favourite movies' />
+  <meta property='og:image'         content="assets/images/cover.jpg" />
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/style.css" type="text/css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <title>Cinemana</title>
+</head>
+<body id='body'>
+  <div class="header">
+    <img src="assets/images/cover.jpg" alt="cover" class="headerCover"/>
+    <div class="linearGradient"></div>
+  </div>
+  <div class="search">
+    <input type="search" placeholder="search ..." onchange="searching()" class="search-input"  id="search"/>
+  </div>
+  <div id="container">
+  </div>
+  <div class="slider-button" onclick="sliderToggle()">
+    <img src="assets/icons/list-white.png" alt="list icon" class="slider-icon"/>
+  </div>
+  <div class="slider" id="slider">
+    <h1 class="slider-close" onclick="sliderToggle(false)">x</h1>
+    <a href="/about" class="slider-a"><h1 class="slider-option" id='silderAbout'>About</h1></a>
+    <a href="/menu" class="slider-a"><h1 class="slider-option" id='silderMenu'>Menu</h1></a>
+    <a href="/home" class="slider-a"><h1 class="slider-option" id='silderHome'>Home</h1></a>
+    <a href="/search" class="slider-a"><h1 class="slider-option" id='silderSearch'>Search</h1></a>
+    <a href="/saved" class="slider-a"><h1 class="slider-option" id='silderSaved'>Saved</h1></a>
+  </div>
+</body>
+</html>
