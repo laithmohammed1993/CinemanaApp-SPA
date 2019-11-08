@@ -1,6 +1,6 @@
 // set variables & functions
 // const domain = 'http://localhost:3000';
-const domain = 'https://cinemana-spa.herokuapp.com';
+// const domain = 'https://cinemana-spa.herokuapp.com';
 localStorage.cardIndex = 0; 
 localStorage.totalFilms = 0; 
 localStorage.sliderState = false
@@ -64,7 +64,7 @@ function getData(){ // Get all films from server side
   // Append loader to main container
   container.innerHTML = Loader();
   // Start Fetching
-  fetch(`${domain}/films`)
+  fetch(`/films`)
     .then(request=>request.json())
     .then(response=>{
       let innerHTML = '';
@@ -86,7 +86,7 @@ function searching(state={}){ // looking for certain film at '/search' route
     body.query = searchInput.value;
     let container = document.getElementById('container')
     container.innerHTML = Loader();
-    fetch(`${domain}/films`,{ method:'post', headers:{'content-type':'application/json'},body:JSON.stringify(body)})
+    fetch(`/films`,{ method:'post', headers:{'content-type':'application/json'},body:JSON.stringify(body)})
       .then(request=>request.json())
       .then(response=>{
         // Chec if we have films or not

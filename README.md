@@ -11,7 +11,6 @@
 ![Image description](https://cinemana-spa.herokuapp.com/assets/images/cover.jpg)
 
 #### How to install :
-  - change value for domain variable at ./public/js/app.js to localhost:3000
   - typing into terminal :
 
 ```bash
