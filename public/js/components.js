@@ -19,25 +19,120 @@ const FilmCard = class {
     this.title        = props.title;
     this.releaseDate  = props.release_date;
     this.voteAverage  = props.vote_average;
+    this.language     = props.original_language;
+    this.overview     = props.overview
     this.index        = props.index;
+    this.divCard      = document.createElement('div');
+    this.imgPoster    = document.createElement('img');
+    this.imgBack      = document.createElement('img');
+    this.divChild1    = document.createElement('div');
+    this.divScript    = document.createElement('div');
+    this.h3           = document.createElement('h3');
+    this.pOverview    = document.createElement('p')
+    this.imgLabel     = document.createElement('img');
+    this.pDate        = document.createElement('p');
+    this.pVote        = document.createElement('p');
+    this.divLang      = document.createElement('div');
   }
+  // set props
   get html(){
-    let isSaved = getObjectInArray(JSON.parse(localStorage.savedFilms),{id:this.id});
-    let label = Object.keys(isSaved).length > 0 ? 'label-green.png':'label-white.png';
-    return `
-      <div class="card" id="card${this.index}" onclick='onClickCard(this.id)'>
-        <img src="${this.poster}" alt="${this.title}" title="${this.title}" class='card-img'>
-        <div class="card-sub">
-          <div class='card-details'>
-            <img src="assets/icons/${label}" alt="label${this.index}" id="label${this.id}" class="card-label" onclick="saveFilm(this.id)"/>
-            <p class='card-details-p'>${this.releaseDate.substring(0,4)}</p>
-            <p class='card-details-p'>${this.voteAverage}⭐</p>
-          </div>
-          <h3 class='card-title'>${this.title}</h3>
-        </div>
-      </div>
-    `
-  };
+    // Main div
+    let Card          = this.divCard;
+    Card.className    = 'card';
+    Card.id           = 'card'+this.index;
+    Card.onclick      = ()=>this.onClickCard();
+    // Poster Image
+    let Img           = this.imgPoster;
+    Img.src           = this.poster;
+    Img.alt           = this.title;
+    Img.title         = this.title;
+    Img.className     = 'card-img';
+    let ImgBack       = this.imgBack;
+    ImgBack.src       = this.poster;
+    ImgBack.className = 'card-imgback';
+    // Sub-div1
+    let Cover         = this.divChild1;
+    Cover.className   = 'card-sub';
+    // Title & Overview
+    let Script        = this.divScript
+    Script.className  = 'card-script'
+    let Title         = this.h3
+    Title.className   = 'card-title';
+    Title.innerText   = this.title;
+    let Overview      = this.pOverview;
+    Overview.className= 'card-overview';
+    Overview.innerText= this.overview;
+    // Save Label
+    let Label         = this.imgLabel;
+    let isSaved       = getObjectInArray(JSON.parse(localStorage.savedFilms),{id:this.id});
+    Label.src         = Object.keys(isSaved).length > 0 ? 'assets/icons/label-green.png':'assets/icons/label-white.png';
+    Label.alt         = `label${this.index}`;
+    Label.id          = `label${this.id}`;
+    Label.className   = 'card-label';
+    Label.onclick     = ()=>this.onClickLabel();
+    // ReleaseDate & Vote
+    let Vote          = this.pVote;
+    Vote.innerText    = `${this.voteAverage}⭐`;
+    Vote.className    = 'card-details card-vote';
+    let ReleaseDate   = this.pDate;
+    ReleaseDate.innerText = this.releaseDate.substring(0,4);
+    ReleaseDate.className = 'card-details card-release';
+    let Language       = this.divLang;
+    Language.className = 'card-details card-lang';
+    Language.innerText = this.language;
+    // Nesting
+    Script.append(Title)
+    Script.append(Overview)
+    Cover.append(Label);
+    Cover.append(Language)
+    Cover.append(ReleaseDate);
+    Cover.append(Vote);
+    Cover.append(Script);
+    Card.append(Img);
+    Card.append(ImgBack)
+    Card.append(Cover);
+    /*
+    <Card>
+      <Img></Img>
+      <ImgBack></ImgBack>
+      <Cover>
+        <Title></Title>        
+        <Label></Label>
+        <Language></Language>
+        <ReleaseDate></ReleaseDate>
+        <Vote></Vote>         
+      </Cover>     
+    </Card>
+    */
+    return Card
+  }
+  onClickCard = ()=>{ // Focus on the card at the time of clicking
+    let oldCardIndex = parseInt(localStorage.getItem('cardIndex'));
+    let newCardIndex = this.index;
+    localStorage.cardIndex = newCardIndex
+    document.getElementById('card'+oldCardIndex).style.border = '2px solid #464646';
+    this.divCard.style.border = '2px solid #4285F4';
+  }
+  onClickLabel = ()=>{
+    let ID = parseInt(this.id);
+    let filmObject = JSON.parse(localStorage.dataFilms).find(film=>film.id==ID)
+    let savedFilms = JSON.parse(localStorage.getItem('savedFilms'));
+    let isExist = getObjectInArray(savedFilms,{id:ID});
+    if(Object.keys(isExist).length != 0){
+      let modifiedArray = removeObjectInArray(savedFilms,{id:ID});
+      localStorage.savedFilms = JSON.stringify(modifiedArray);
+      if(window.location.pathname === '/saved'){
+        this.divCard.onclick = ()=>{}
+        this.divCard.remove()
+      }else{
+        this.imgLabel.src = 'assets/icons/label-white.png';
+      }
+    }else{
+      savedFilms.push(filmObject);
+      localStorage.savedFilms = JSON.stringify(savedFilms)
+      this.imgLabel.src = 'assets/icons/label-green.png';
+    }  
+  }
 };
 
 function AboutUs(){

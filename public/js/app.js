@@ -1,6 +1,7 @@
 // set variables & functions
 // const domain = 'http://localhost:3000';
 // const domain = 'https://cinemana-spa.herokuapp.com';
+// 2019-11-08T09:56:57.277338+00:00 
 localStorage.cardIndex = 0; 
 localStorage.totalFilms = 0; 
 localStorage.sliderState = false
@@ -20,7 +21,7 @@ function routing(){ // Navigator for this app
     case '/home'        : getData();break;
     case '/menu'        : break;
     case '/search'      : searching({renderElement:true});break;
-    case '/saved'       : savedData();break;
+    case '/saved'       : savedRender();break;
     case '/about'       : aboutUsRender();break;
     default             : getData();break;
   }
@@ -67,15 +68,14 @@ function getData(){ // Get all films from server side
   fetch(`/films`)
     .then(request=>request.json())
     .then(response=>{
-      let innerHTML = '';
       localStorage.totalFilms = response.length;
       localStorage.dataFilms  = JSON.stringify(response);
+      container.innerHTML = ''
       response.map((film,i)=>{
         film.index = i;
-        let ui = new FilmCard(film);
-        innerHTML += ui.html
+        let card = new FilmCard(film);
+        container.append(card.html)
       });
-      container.innerHTML = innerHTML;
     })
 }
 function searching(state={}){ // looking for certain film at '/search' route
@@ -91,15 +91,14 @@ function searching(state={}){ // looking for certain film at '/search' route
       .then(response=>{
         // Chec if we have films or not
         if(response.length !== 0){ 
+          container.innerHTML = '';
           searchInput.style.display = 'none';
-          let innerHTML = '';
           localStorage.totalFilms = response.length;
           response.map((film,i)=>{
             film.index = i;
-            let ui = new FilmCard(film);
-            innerHTML += ui.html
+            let card = new FilmCard(film);
+            container.append(card.html);
           });
-          container.innerHTML = innerHTML;
         }else{
           // Append NoThing component to main container
           container.innerHTML = NoThing();
@@ -111,40 +110,14 @@ function aboutUsRender(){ // Append AboutUs component to main container ar '/abo
   let container = document.getElementById('container');
   container.innerHTML = AboutUs();
 }
-function savedData(){ // Append all stored film to main container ar '/saved' route
+function savedRender(){ // Append all stored film to main container ar '/saved' route
   let container = document.getElementById('container');
   let savedFilms = JSON.parse(localStorage.savedFilms);
-  let innerHTML = '';
   savedFilms.map((film,i)=>{
     film.index = i;
-    let ui = new FilmCard(film);
-    innerHTML += ui.html
+    let card = new FilmCard(film);
+    container.append(card.html)
   });
-  container.innerHTML = innerHTML;
-}
-const onClickCard = id=>{ // Focus on the card at the time of clicking
-  let oldCardIndex = parseInt(localStorage.getItem('cardIndex'));
-    let newCardIndex = parseInt(id.substring(4));
-    localStorage.setItem('cardIndex',newCardIndex);
-    document.getElementById('card'+oldCardIndex).style.border = '2px solid #464646';
-    let newCard = document.getElementById('card'+newCardIndex);
-    newCard.style.border = '2px solid #4285F4';
-}
-const saveFilm    = (id)=>{ // Store film or remove stored film
-  let ID = parseInt(id.substring(5));
-  let label = document.getElementById(id);
-  let filmObject = JSON.parse(localStorage.dataFilms).find(film=>film.id==ID)
-  let savedFilms = JSON.parse(localStorage.getItem('savedFilms'));
-  let isExist = getObjectInArray(savedFilms,{id:ID});
-  if(Object.keys(isExist).length != 0){
-    let modifiedArray = removeObjectInArray(savedFilms,{id:ID});
-    localStorage.savedFilms = JSON.stringify(modifiedArray)
-    label.src = 'assets/icons/label-white.png';
-  }else{
-    savedFilms.push(filmObject);
-    localStorage.savedFilms = JSON.stringify(savedFilms)
-    label.src = 'assets/icons/label-green.png';
-  }  
 }
 const cardsPerRow = ()=>{ // Calculate number or films per row within main container
   let minoffsetTop = null;
