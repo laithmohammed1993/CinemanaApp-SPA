@@ -1,12 +1,30 @@
-const Loader = ()=>{
+const Loader = (element=false)=>{
+  if(element){
+    let Img = document.createElement('img');
+    Img.className = 'loader-gif';
+    Img.alt = 'loader';
+    Img.src = 'assets/icons/loader.gif';
+    let Div = document.createElement('div');
+    Div.className = 'loader'
+    Div.id = 'Loader';
+    Div.append(Img)
+    return Div;
+  }
   return `
-    <div class="loader">
+    <div class="loader" id="Loader">
       <img src="assets/icons/loader.gif" alt="loader" class="loader-gif"/>
     </div>
   `
 }
 
-const NoThing = ()=>{
+const NoThing = (element=true)=>{
+  if(element){
+    let Header = document.createElement('h1');
+    Header.innerText = 'No Thing';
+    Header.className = 'nothing-component';
+    Header.id = 'Nothing'
+    return Header
+  }
   return `
     <h1 class="nothing-component">No Thing</h1>
   `
@@ -46,21 +64,21 @@ const FilmCard = class {
     Img.src           = this.poster;
     Img.alt           = this.title;
     Img.title         = this.title;
-    Img.className     = 'card-img';
+    Img.className     = `card-img _${this.index}`;
     let ImgBack       = this.imgBack;
     ImgBack.src       = this.poster;
-    ImgBack.className = 'card-imgback';
+    ImgBack.className = `card-imgback _${this.index}`;
     // Sub-div1
     let Cover         = this.divChild1;
     Cover.className   = 'card-sub';
     // Title & Overview
     let Script        = this.divScript
-    Script.className  = 'card-script'
+    Script.className  = `card-script _${this.index}`
     let Title         = this.h3
     Title.className   = 'card-title';
     Title.innerText   = this.title;
     let Overview      = this.pOverview;
-    Overview.className= 'card-overview';
+    Overview.className= `card-overview _${this.index}`;
     Overview.innerText= this.overview;
     // Save Label
     let Label         = this.imgLabel;
@@ -73,12 +91,12 @@ const FilmCard = class {
     // ReleaseDate & Vote
     let Vote          = this.pVote;
     Vote.innerText    = `${this.voteAverage}⭐`;
-    Vote.className    = 'card-details card-vote';
+    Vote.className    = `card-details card-vote _${this.index}`;
     let ReleaseDate   = this.pDate;
     ReleaseDate.innerText = this.releaseDate.substring(0,4);
-    ReleaseDate.className = 'card-details card-release';
+    ReleaseDate.className = `card-details card-release _${this.index}`;
     let Language       = this.divLang;
-    Language.className = 'card-details card-lang';
+    Language.className = `card-details card-lang _${this.index}`;
     Language.innerText = this.language;
     // Nesting
     Script.append(Title)
@@ -176,4 +194,140 @@ function removeObjectInArray(array,option){
     if(object[Object.keys(option)[0]]!=option[Object.keys(option)[0]]){ newArray.push(object) }
   }
   return newArray
+}
+
+const Footer = class{
+  constructor(){
+    this.data = {
+      INFORMATION : [
+        { name : 'Resourse', url : '#' },
+        { name : 'Blogs', url : '#' },
+        { name : 'Plans', url : '#' },
+        { name : 'Jobs', url : '#' },
+        { name : 'About us', url : '/about' },
+      ],
+      LEGAL : [
+        { name : 'Terms & Conditions', url : '#' },
+        { name : 'License Agreement', url : '#' },
+        { name : 'Privacy policy', url : '#' },
+        { name : 'Terms & Conditions', url : '#' },
+      ],
+      'SOCIAL MEDIA' : [
+        { name : 'Fasebook', url : '#' },
+        { name : 'Twitter', url : '#' },
+        { name : 'Instagram', url : '#' },
+        { name : 'Youtube', url : '#' },
+      ],
+      HELP : [
+        { name : 'Support', url : '#' },
+        { name : 'Contact', url : '#' },
+      ]
+    };
+  }
+  get html(){
+    // Footer
+    let Footer = document.createElement('div');
+    Footer.className = 'footer'
+    Object.keys(this.data).map(key=>{
+      // Box
+      let Box      = document.createElement('div');
+      Box.className= 'footer-box';
+      // Header
+      let Header   = document.createElement('h2');
+      Header.className = 'footer-header';
+      Header.innerText = key;
+      Box.append(Header);
+      this.data[key].map(item=>{
+        // Paragraph
+        let Paragraph = document.createElement('p');
+        Paragraph.className = 'footer-para';
+        Paragraph.innerText = item.name;
+        let Link = document.createElement('a');
+        Link.href = item.url;
+        Link.className = 'footer-link';
+        Link.append(Paragraph);
+        Box.append(Link);
+      })
+      Footer.append(Box);
+    });
+    let RightCopy = document.createElement('p');
+    RightCopy.className = 'footer-rightcopy';
+    RightCopy.innerText = 'Copyright © 2019'
+    Footer.append(RightCopy);
+    return Footer
+  }
+}
+let SortInput = class{
+  constructor(props){
+    this.list = {
+      "vote_average":"Vote",
+      "title":"Title",
+      "vote_count":"Most Popular",
+      "release_date":"Release Date",
+    }
+  }
+  get html(){
+    // Container
+    let Container = document.createElement('div');
+    Container.className = 'selector-box'
+    let Div = document.createElement('div');
+    Div.className = 'selector-div';
+    // Selector
+    let Selector = document.createElement('select');
+    Selector.className = 'selector';
+    Selector.onchange = (e)=>menuRender(e.target.value,undefined)
+    // Options
+    Object.keys(this.list).map((key,i)=>{
+      let Option = document.createElement('option');
+      Option.className = 'selector-option';
+      Option.value = key;
+      Option.innerText = this.list[key];
+      Selector.append(Option);
+    });
+    let RadioInput = (name,value,title,index,checked)=>{
+      let radio = document.createElement('input');
+      radio.name = name;
+      radio.type = 'radio';
+      radio.className = 'selector-sort-radio'
+      radio.value = value;
+      radio.id = name+index;
+      radio.checked = checked;
+      radio.onclick = (e)=>menuRender(document.getElementsByClassName('selector')[0].value,e.target.value)
+      let label = document.createElement('label');
+      label.className = 'selector-sort-span'
+      label.innerText = title;
+      label.htmlFor = name+index;
+      return [radio,label]
+    }
+    // Check radio
+    let CheckASC = RadioInput('sortType','asc','Ascending','0',true);
+    let CheckDESC = RadioInput('sortType','desc','Descending','1',false);
+    let SortTypeDiv = document.createElement('div');
+    SortTypeDiv.className = 'selector-div-radio'
+    SortTypeDiv.append(CheckASC[0])
+    SortTypeDiv.append(CheckASC[1])
+    SortTypeDiv.append(CheckDESC[0])
+    SortTypeDiv.append(CheckDESC[1])
+    // Tilte
+    let Title = document.createElement('p');
+    Title.innerText = 'Sorted by :';
+    Title.className = 'selector-title';
+    Div.append(Selector)
+    Div.append(Title)
+    Div.append(SortTypeDiv)
+    Container.append(Div);
+    return Container
+  }
+}
+const SearchInput = ()=>{
+  let SearchDiv = document.createElement('div');
+  SearchDiv.className = 'search';
+  let SearchTextInput = document.createElement('input');
+  SearchTextInput.type = 'search';
+  SearchTextInput.placeholder = 'search ...';
+  SearchTextInput.onchange = (e)=>searching(e.target.value)
+  SearchTextInput.className = 'search-input';
+  SearchTextInput.id = 'search';
+  SearchDiv.append(SearchTextInput);
+  return SearchDiv
 }

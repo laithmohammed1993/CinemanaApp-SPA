@@ -2,7 +2,7 @@
 // const domain = 'http://localhost:3000';
 // const domain = 'https://cinemana-spa.herokuapp.com';
 // 2019-11-08T09:56:57.277338+00:00 
-localStorage.cardIndex = 0; 
+localStorage.removeItem('cardIndex')
 localStorage.totalFilms = 0; 
 localStorage.sliderState = false
 if(!localStorage.savedFilms){ localStorage.savedFilms = "[]"; }
@@ -12,6 +12,8 @@ window.addEventListener('load',(e)=>{
   routing()
   // Listener over any key pressed
   document.onkeydown = arrowNavigation;
+  // Footer
+  document.body.append(new Footer().html);
 })
 function routing(){ // Navigator for this app
   let path = window.location.pathname;
@@ -19,8 +21,8 @@ function routing(){ // Navigator for this app
     case '/'            : getData();break;
     case '/index.html'  : getData();break;
     case '/home'        : getData();break;
-    case '/menu'        : break;
-    case '/search'      : searching({renderElement:true});break;
+    case '/menu'        : menuRender();break;
+    case '/search'      : searching();break;
     case '/saved'       : savedRender();break;
     case '/about'       : aboutUsRender();break;
     default             : getData();break;
@@ -39,26 +41,53 @@ function arrowNavigation(e){
     // Ckeck right arrow key is pressed and slider is opened for close it
     if(e.keyCode === ArrowKeys.right && localStorage.sliderState){ sliderToggle(false) }
     // Check if there are elements
-    if(localStorage.totalFilms > 0){
+    // Get total films that we have
+    let totalFilms = Object.keys(document.getElementsByClassName('card')).length;
+    if(totalFilms > 0){
       // Calculate how many Cards per row into main container
       let cardsRow = cardsPerRow(); 
-      // Get total films that we have
-      let totalFilms = localStorage.totalFilms;
       // Get max index to hold movement to Down
       let maxIndex = totalFilms-1;
       let oldCardIndex = parseInt(localStorage.getItem('cardIndex'));
       let newCardIndex;
+      if(oldCardIndex || oldCardIndex === 0){
         if(ArrowKeys.left  === e.keyCode){ newCardIndex = oldCardIndex-1          < 0        ? maxIndex     : oldCardIndex-1 }
         if(ArrowKeys.up    === e.keyCode){ newCardIndex = oldCardIndex - cardsRow < 0        ? oldCardIndex : oldCardIndex - cardsRow }
         if(ArrowKeys.right === e.keyCode){ newCardIndex = oldCardIndex+1          > maxIndex ? 0            : oldCardIndex+1 }
         if(ArrowKeys.down  === e.keyCode){ newCardIndex = oldCardIndex + cardsRow > maxIndex ? oldCardIndex : oldCardIndex + cardsRow }
-      localStorage.setItem('cardIndex',newCardIndex);
-      document.getElementById('card'+oldCardIndex).style.border = '2px solid #464646';
-      let newCard = document.getElementById('card'+newCardIndex);
-      newCard.style.border = '2px solid #4285F4';
-      newCard.scrollIntoView({block:'center'})
+      }else{
+        oldCardIndex = null;
+        newCardIndex = 0;
+      }
+      if(oldCardIndex !== newCardIndex){
+        localStorage.setItem('cardIndex',newCardIndex);
+        if(oldCardIndex !== null){ document.getElementById('card'+oldCardIndex).style.border = '2px solid #464646'; }
+        let newCard = document.getElementById('card'+newCardIndex);
+        newCard.style.border = '2px solid #4285F4';
+        newCard.scrollIntoView({block:'center'})
+        cardHover(oldCardIndex,newCardIndex)
+      }
     }
   }
+}
+function cardHover(oldIndex,newIndex){
+  let animated  = (index)=>[`card-img _${index} card-img-animated`, `card-imgback _${index} card-imgback-animated`, 
+                      `card-script _${index} card-script-animated`, `card-overview _${index} card-overview-animated`, 
+                      `card-details card-vote _${index} card-vote-animated`, `card-details card-release _${index} card-release-animated`, 
+                      `card-details card-lang _${index} card-lang-animated`
+                      ]
+  let unanimated    = (index)=>[`card-img _${index}`, `card-imgback _${index}`, `card-script _${index}`, 
+                      `card-overview _${index}`, `card-details card-vote _${index}`, 
+                      `card-details card-release _${index}`, `card-details card-lang _${index}`
+                      ];
+  animated(oldIndex).map((Class,i)=>{ 
+    if(document.getElementsByClassName(Class).length > 0){ 
+      document.getElementsByClassName(Class)[0].className = unanimated(oldIndex)[i]; 
+    } 
+  }); 
+  unanimated(newIndex).map((Class,i)=>{
+      document.getElementsByClassName(Class)[0].className = animated(newIndex)[i]; 
+  }); 
 }
 function getData(){ // Get all films from server side
   let container = document.getElementById('container')
@@ -70,6 +99,7 @@ function getData(){ // Get all films from server side
     .then(response=>{
       localStorage.totalFilms = response.length;
       localStorage.dataFilms  = JSON.stringify(response);
+      response.sort((a,b)=>{ return 0.5 - Math.random() })
       container.innerHTML = ''
       response.map((film,i)=>{
         film.index = i;
@@ -78,21 +108,21 @@ function getData(){ // Get all films from server side
       });
     })
 }
-function searching(state={}){ // looking for certain film at '/search' route
-  let searchInput = document.getElementById('search');
-  if(state.renderElement){ searchInput.style.display = 'flex'; }
-  if(searchInput.value){ // check input value is not empty
+function searching(query){ // looking for certain film at '/search' route
+  let container = document.getElementById('container');
+  if(!document.getElementById('search')){ container.append(SearchInput()) }
+  if(query){ // check input value is not empty
     let body = {};
-    body.query = searchInput.value;
-    let container = document.getElementById('container')
-    container.innerHTML = Loader();
+    body.query = query;
+    if(document.getElementById('Nothing')){ document.getElementById('Nothing').remove() };
+    Object.values(container.getElementsByClassName('card')).map(element=>element.remove());
+    if(!document.getElementById('Loader')){ container.append(Loader(true)); }
     fetch(`/films`,{ method:'post', headers:{'content-type':'application/json'},body:JSON.stringify(body)})
       .then(request=>request.json())
       .then(response=>{
+        document.getElementById('Loader').remove();
         // Chec if we have films or not
         if(response.length !== 0){ 
-          container.innerHTML = '';
-          searchInput.style.display = 'none';
           localStorage.totalFilms = response.length;
           response.map((film,i)=>{
             film.index = i;
@@ -101,7 +131,7 @@ function searching(state={}){ // looking for certain film at '/search' route
           });
         }else{
           // Append NoThing component to main container
-          container.innerHTML = NoThing();
+          container.append(NoThing(true));
         }
       })
   }
@@ -110,14 +140,46 @@ function aboutUsRender(){ // Append AboutUs component to main container ar '/abo
   let container = document.getElementById('container');
   container.innerHTML = AboutUs();
 }
+function menuRender(sortCardBy,sortType){
+  let container = document.getElementById('container');
+  container.append(Loader(true));
+  Object.values(container.getElementsByClassName('card')).map(element=>element.remove());
+  if(!sortCardBy){ container.insertBefore(new SortInput().html, container.firstChild);sortCardBy='vote_average'; }
+  if(!sortType){ sortType = Object.values(document.getElementsByName('sortType')).find(e=>e.checked==true).value }
+  fetch('/films')
+    .then(request=>request.json())
+    .then(response=>{
+      document.getElementById('Loader').remove();
+      if(response.length > 0){
+        response.sort((a,b)=>{ 
+          let pair1 = sortType=='asc'?a[sortCardBy]:b[sortCardBy];
+          let pair2 = sortType=='asc'?b[sortCardBy]:a[sortCardBy];
+            if ( pair1.toString().toLowerCase() < pair2.toString().toLowerCase() ){ return -1; }
+            if ( pair2.toString().toLowerCase() > pair1.toString().toLowerCase() ){ return 1;  }
+            return 0;
+        }).map((film,i)=>{
+          film.index = i;
+          // console.log(film[sortCardBy])
+          let card = new FilmCard(film);
+          container.append(card.html);
+        });
+      }else{
+        container.append(NoThing)
+      }
+    })
+}
 function savedRender(){ // Append all stored film to main container ar '/saved' route
   let container = document.getElementById('container');
   let savedFilms = JSON.parse(localStorage.savedFilms);
-  savedFilms.map((film,i)=>{
-    film.index = i;
-    let card = new FilmCard(film);
-    container.append(card.html)
-  });
+  if(savedFilms.length > 0){
+    savedFilms.map((film,i)=>{
+      film.index = i;
+      let card = new FilmCard(film);
+      container.append(card.html)
+    });
+  }else{
+    container.innerHTML = NoThing()
+  }
 }
 const cardsPerRow = ()=>{ // Calculate number or films per row within main container
   let minoffsetTop = null;
