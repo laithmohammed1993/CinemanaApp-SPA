@@ -1,33 +1,21 @@
-const Loader = (element=false)=>{
-  if(element){
-    let Img = document.createElement('img');
-    Img.className = 'loader-gif';
-    Img.alt = 'loader';
-    Img.src = 'assets/icons/loader.gif';
-    let Div = document.createElement('div');
-    Div.className = 'loader'
-    Div.id = 'Loader';
-    Div.append(Img)
-    return Div;
-  }
-  return `
-    <div class="loader" id="Loader">
-      <img src="assets/icons/loader.gif" alt="loader" class="loader-gif"/>
-    </div>
-  `
+const Loader = ()=>{
+  let Img = document.createElement('img');
+  Img.className = 'loader-gif';
+  Img.alt = 'loader';
+  Img.src = 'assets/icons/loader.gif';
+  let Div = document.createElement('div');
+  Div.className = 'loader'
+  Div.id = 'Loader';
+  Div.append(Img)
+  return Div;
 }
 
-const NoThing = (element=true)=>{
-  if(element){
+const NoThing = ()=>{
     let Header = document.createElement('h1');
     Header.innerText = 'No Thing';
     Header.className = 'nothing-component';
     Header.id = 'Nothing'
     return Header
-  }
-  return `
-    <h1 class="nothing-component">No Thing</h1>
-  `
 }
 
 const FilmCard = class {

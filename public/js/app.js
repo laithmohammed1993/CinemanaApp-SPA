@@ -92,13 +92,14 @@ function cardHover(oldIndex,newIndex){
 function getData(){ // Get all films from server side
   let container = document.getElementById('container')
   // Append loader to main container
-  container.innerHTML = Loader();
+  container.append(Loader());
   // Start Fetching
   fetch(`/films`)
     .then(request=>request.json())
     .then(response=>{
       localStorage.totalFilms = response.length;
       localStorage.dataFilms  = JSON.stringify(response);
+      document.getElementById('Loader').remove();
       response.sort((a,b)=>{ return 0.5 - Math.random() })
       container.innerHTML = ''
       response.map((film,i)=>{
@@ -116,7 +117,7 @@ function searching(query){ // looking for certain film at '/search' route
     body.query = query;
     if(document.getElementById('Nothing')){ document.getElementById('Nothing').remove() };
     Object.values(container.getElementsByClassName('card')).map(element=>element.remove());
-    if(!document.getElementById('Loader')){ container.append(Loader(true)); }
+    if(!document.getElementById('Loader')){ container.append(Loader()); }
     fetch(`/films`,{ method:'post', headers:{'content-type':'application/json'},body:JSON.stringify(body)})
       .then(request=>request.json())
       .then(response=>{
@@ -131,7 +132,7 @@ function searching(query){ // looking for certain film at '/search' route
           });
         }else{
           // Append NoThing component to main container
-          container.append(NoThing(true));
+          container.append(NoThing());
         }
       })
   }
@@ -142,7 +143,7 @@ function aboutUsRender(){ // Append AboutUs component to main container ar '/abo
 }
 function menuRender(sortCardBy,sortType){
   let container = document.getElementById('container');
-  container.append(Loader(true));
+  container.append(Loader());
   Object.values(container.getElementsByClassName('card')).map(element=>element.remove());
   if(!sortCardBy){ container.insertBefore(new SortInput().html, container.firstChild);sortCardBy='vote_average'; }
   if(!sortType){ sortType = Object.values(document.getElementsByName('sortType')).find(e=>e.checked==true).value }
@@ -164,7 +165,7 @@ function menuRender(sortCardBy,sortType){
           container.append(card.html);
         });
       }else{
-        container.append(NoThing)
+        container.append(NoThing())
       }
     })
 }
@@ -178,7 +179,7 @@ function savedRender(){ // Append all stored film to main container ar '/saved' 
       container.append(card.html)
     });
   }else{
-    container.innerHTML = NoThing()
+    container.append(NoThing());
   }
 }
 const cardsPerRow = ()=>{ // Calculate number or films per row within main container
