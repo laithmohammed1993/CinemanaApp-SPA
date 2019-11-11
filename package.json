@@ -1,20 +1,12 @@
 {
   "name": "cinemana",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "spa",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "node server.js",
     "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/laithmohammed1993/CinemanaApp-SPA.git"
-  },
   "author": "laith mohammed",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/laithmohammed1993/CinemanaApp-SPA/issues"
-  },
-  "homepage": "https://github.com/laithmohammed1993/CinemanaApp-SPA#readme"
+  "license": "ISC"
 }
