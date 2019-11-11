@@ -1,26 +1,26 @@
-# Cinemana App
+# Cinemana App 
 #### It is Single Page Application
-
+[Demo](https://cinemana-spa.herokuapp.com/)
+#### Description :
+this application is build with pure Node Js without using any frameworks or libraries for Front & Back end sides.
 #### Features :
   - Search engine
   - Store your favorite movies.
   - More responsive app.
-  - Elements sorting feature within menu page.
-  - Footer.
-  - New animation style with card element.    
-  - Description for each movie within card element.    
-  - More javascript patterns    
-  - Improve navigation with arrow keys.
+  - Elements sorting.
+  - Animation style for movies elements.
+  - Javascript patterns.
+  - Navigation with arrow keys.
 
-[Cinemana App Demo](https://cinemana-spa.herokuapp.com/)
-![Image description](https://cinemana-spa.herokuapp.com/assets/images/cover.jpg)
+#### Screen Shoots
+![Image description](https://cinemana-spa.herokuapp.com/assets/screenshoots/1.jpg)
+![Image description](https://cinemana-spa.herokuapp.com/assets/screenshoots/2.jpg)
+![Image description](https://cinemana-spa.herokuapp.com/assets/screenshoots/3.jpg)
+![Image description](https://cinemana-spa.herokuapp.com/assets/screenshoots/4.jpg)
+![Image description](https://cinemana-spa.herokuapp.com/assets/screenshoots/5.jpg)
 
 #### How to install :
-  - typing into terminal :
+    - node server.js
 
-```bash
-node server.js
-```
-    
-    
-    
+#### Environment :
+    - nodejs --version 12.7.0
